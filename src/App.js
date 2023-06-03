@@ -1,23 +1,14 @@
-import logo from './logo.svg';
+
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Write the code so that user can subscribe</h1>
+
+      <p>this web will be linked to the dashboard web app which will redirect the user to this web page  if any doubt feel free to ask.</p>
+
+
     </div>
   );
 }
