@@ -1,0 +1,7 @@
+.custom-toast{
+    background-color: black;
+    color: #fff;
+}
+.custom-toast .Toastify__progress-bar {
+    transition: width 10s linear; 
+}
