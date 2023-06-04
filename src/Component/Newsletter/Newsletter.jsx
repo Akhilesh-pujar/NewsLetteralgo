@@ -1,4 +1,5 @@
 import React,{useState} from 'react'
+import axios from "axios"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Newsletter.css'
@@ -17,37 +18,57 @@ function Newsletter() {
         setEmail(event.target.value);
     }
 
-    const handleSubscription = () => {
-       if(isChecked && email !== ''){
-        toast.success('Successfylly Subscribed!',{
-            className: 'custom-toast',
-            bodyClassName:'custom-toast-body',
-            progressClassName: 'custom-toast-progress',
-        });}
-        else{
-          if(isChecked && email === ''){
-            toast.error('Please fill the required data',{
-                className: 'custom-toast',
-                bodyClassName:'custom-toast-body',
-                progressClassName: 'custom-toast-progress',
-            });
-          }
-          if (isChecked === ''){
-            toast.error('Please select checkbox',{
-                className: 'custom-toast',
-                bodyClassName:'custom-toast-body',
-                progressClassName: 'custom-toast-progress',
-            });
-          }
-          if(email === ''){
-            toast.error('Please enter your email',{
-                className: 'custom-toast',
-                bodyClassName:'custom-toast-body',
-                progressClassName: 'custom-toast-progress',
-            });
-          }
-        }
-    };
+ async function handleSubscription(e) {
+        e.preventDefault();
+
+        try{
+            await axios.post("http://localhost:5000/",{
+               email,isChecked
+                })
+            .then(res => {
+               if(res.data ==="exist"){
+                   alert("user already exists")
+               }
+               else if(res.data ==="notexist"){
+                //toast.success('Sucessfully subscribed !....',{className: 'custom-toast',})
+                if (isChecked && email !== '') {
+                    toast.success('Successfylly Subscribed!', {
+                        className: 'custom-toast',
+                        bodyClassName: 'custom-toast-body',
+                        progressClassName: 'custom-toast-progress',
+                    });
+                }
+                else {
+                    
+                     if (isChecked === false) {
+                        toast.error('Please select checkbox', {
+                            className: 'custom-toast',
+                            bodyClassName: 'custom-toast-body',
+                            progressClassName: 'custom-toast-progress',
+                        });
+                    }
+                    else if(email === ''){
+                        toast.error('Please enter your email...', {
+                            className: 'custom-toast',
+                            bodyClassName: 'custom-toast-body',
+                            progressClassName: 'custom-toast-progress',
+                        }); 
+                    }
+                    
+                } 
+                   
+               }
+            })
+            .catch(e => {
+               alert("Wrong Credentials ")
+               console.log(e)
+            })
+       }
+       catch(e){
+           console.log(e);
+       }
+        
+    }
 
 return (
     <><div className="newsletter">
