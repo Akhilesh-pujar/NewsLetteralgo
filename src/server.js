@@ -2,10 +2,9 @@ const express=require("express")
 const User = require("./subscriber-id-storage.js")
 const cors=require("cors")
 const app=express()
-const nodemailer = require('nodemailer');
-const Mailgen = require('mailgen');
-const { EMAIL, PASSWORD } = require('./env.js')
+const appRoute = require('./routes/route.js')
 const PORT =process.env.PORT || 5000;
+
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -37,51 +36,8 @@ app.post("/",async(req,res) =>{
   catch(e){
       res.json("notexist")
   }
-  
-  let config = {
-    service : 'gmail',
-    auth : {
-        user: EMAIL,
-        pass: PASSWORD
-    }
-}
-
-let transporter = nodemailer.createTransport(config);
-
-let MailGenerator = new Mailgen({
-    theme: "default",
-    product : {
-        name: "Mailgen",
-        link : 'https://mailgen.js/'
-    }
 })
-
-let response = {
-    body: {
-        name : "Subscription Notification",
-        intro: "Thanks for Subscribing our NewsLetter",
-        outro: "We will notify you when there is update in News "
-    }
-}
-
-let mail = MailGenerator.generate(response)
-
-let message = {
-    from : EMAIL,
-    to : email,
-    subject: "Subscription Notification",
-    html: mail
-}
-
-transporter.sendMail(message).then(() => {
-    return res.status(201).json({
-        msg: "you should receive an email"
-    })
-}).catch(error => {
-    return res.status(500).json({ error })
-})
-
-})
+app.use('/api',appRoute);
 
 app.listen(PORT,() => {
   console.log("Port connected");

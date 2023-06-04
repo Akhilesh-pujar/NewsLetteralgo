@@ -1,4 +1,4 @@
 module.exports={
-    EMAIL:"",
-    PASSWORD:"",
+    EMAIL:"023neeraja@gmail.com",
+    PASSWORD:"---------------",
 }
