@@ -3,12 +3,12 @@ const Mailgen = require('mailgen');
 
 const { EMAIL, PASSWORD } = require('../env.js')
 
-/** send mail from testing account */
+
 
 const notification = (req, res) => {
 
     const { userEmail } = req.body;
-
+    console.log(userEmail)
     let config = {
         service : 'gmail',
         auth : {
