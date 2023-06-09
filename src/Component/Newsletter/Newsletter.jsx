@@ -75,7 +75,7 @@ return (
                 <div className='img-container'>
                     <div className='img-top'>
                         <img src={NewsletterImg} alt="img not found" />
-                    </div>
+</div>
                     <div className='div-bottom'>
                         <div className="bottom-body">
                             <h1>Subscribe to our daily newsletter</h1>

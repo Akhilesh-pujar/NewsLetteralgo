@@ -66,9 +66,9 @@ h1{
 .newsletter-form input[type="email"] {
     padding-top: 10px;
     padding-bottom: 10px;
-    margin-left: -100px;
+    margin-left: -180px;
     border: none;
-    width: 50%;
+    width: 40%;
     margin-top:20px;
     background-color: #82C3EC;
 }
