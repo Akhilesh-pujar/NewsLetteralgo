@@ -12,8 +12,8 @@ const notification = (req, res) => {
     let config = {
         service : 'gmail',
         auth : {
-            user: EMAIL,
-            pass: PASSWORD
+            user: "023neeraja@gmail.com",
+            pass: "vsjvmijivxtamxan"
         }
     }
 
