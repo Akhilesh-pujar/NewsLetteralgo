@@ -7,53 +7,49 @@ const WebSocketServer = require('ws');
 const { PORT, MONGODB_URI } = require('./config.js')
 const server = require('http').createServer();
 const wss = new WebSocketServer.Server({server});
-const user=require("../src/routes/route.js")
-const axios=require("axios")
 
-mongoose.connect(MONGODB_URI)
-.then(()=>{console.log("mongoodb connected")})
-.catch((e)=>{console.log(e)})
+
+const DataSchema = mongoose.Schema({
+    title: String,
+    type: String,
+    description: String
+})
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const User = require("../src/subscriber-id-storage.js")
+const Data =mongoose.model('data',DataSchema)
+
+
 wss.on("connection",async (ws) => {
     console.log('websocket connected');
-    
-const changeStream = mongoose.connection.collection('data').watch();
+    const pipeline = [ { $match: { runtime: { $lt: 15 } } } ];
+const changeStream = Data.watch(pipeline);
     if(changeStream){console.log(changeStream.value)}    
-    changeStream.on('change', (change) => {
-        console.log("Database Changes Occured")
-        if (change.operationType === 'insert') {
-            console.log('New insertion:', change.fullDocument);
-            const users =  getallusers();
-            async function getallusers() {
-                try {
-                  const response = await axios.get('https://api.theautring.com/api/v1/getalluser', {
-                    timeout: 10000
-                  });
-                  if (!response.ok) {
-                    throw new Error('Request failed');
-                  }
-                  console.log("data fetched")
-                  const data = await response.json();
-                  console.log(data);
-                  return data; 
-                } catch (error) {
-                  console.error('Error:', error);
-                  
-                }
-              }
-              users.froEach(user =>{
-                Sendmail(user,change.fullDocument)
-              })
-        }    
+    changeStream.on('change', (changeHandler) => {
+        console.log("Haiiii")
+        if (changeHandler.operationType === 'insert') {
+            const insertedValue = changeHandler.fullDocument.value;
+            console.log('New insertion:', insertedValue);
+        
+        User.find({}, (err, users) => {
+            if (err) {
+                console.error('Error retrieving users:', err);
+                return;
+            }
+            users.forEach((user) => {
+                const { email } = user;
+                // eslint-disable-next-line no-undef
+                Sendmail(email,insertedValue);
+            });
+        })
+        }
     });
 })
 
 const Sendmail = (req,res) =>{
     const { userEmail,details } = req.body;
-    console.log("sending mails")
     let config = {
         service : 'gmail',
         auth : {
@@ -98,7 +94,6 @@ const Sendmail = (req,res) =>{
     })
 
 }
-app.use("/api/v1", user);
 server.listen(PORT, function () {
     console.log(`im listening at ${PORT}`);
 });

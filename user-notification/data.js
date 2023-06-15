@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+
 const DataSchema = mongoose.Schema({
     title: String,
     type: String,

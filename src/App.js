@@ -2,29 +2,27 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import Newsletter from './Component/Newsletter/Newsletter';
-import React, { useEffect } from 'react';
-
+import React, { useEffect} from 'react';
 
 function App() {
+  
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:8000/');
-    ws.onopen = () => {
-      console.log('WebSocket connection established');
-      ws.send('Hello, server!');
-    };
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      console.log('Received message:', message);
-    };
-
-    ws.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-    const message = { action: 'insert', payload: { name: 'John', age: 30 } };
-    ws.send(JSON.stringify(message));
+    ws.addEventListener('open',() =>{
+      console.log("Connection Opened");
+    })
+    ws.addEventListener('error',(error)=>{
+      console.log('WebSocket error' , error)
+    })
+    ws.addEventListener('message',(message)=>{
+      const message2 = JSON.parse(message);
+      console.log('Received message:', message2);
+    })
+    ws.addEventListener('close',()=>{
+      console.log('Connection Closed')
+    })
+    
+    
     return () => {
       ws.close();
     };
