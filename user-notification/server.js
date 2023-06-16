@@ -98,7 +98,7 @@ const Sendmail = (req,res) =>{
     })
 
 }
-app.use("/api/v1", user);
+
 server.listen(PORT, function () {
     console.log(`im listening at ${PORT}`);
 });

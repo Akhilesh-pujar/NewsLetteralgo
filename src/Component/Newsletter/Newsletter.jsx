@@ -1,17 +1,33 @@
 import React,{useState} from 'react'
 import axios from "axios"
+import { useFormik } from 'formik';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Newsletter.css'
 import NewsletterImg from "../../assets/newsletter.jpeg"
+import { SubcriptionSchema } from '../../Schemas/SubscriptionSchema';
 import './Toast.css'
 
+const initialValues ={
+    email:""
+};
+
 function Newsletter() {
+    
+    const {values,errors,touched,handleChange,handleSubmit,handleBlur}=useFormik({
+        initialValues,
+        validationSchema:SubcriptionSchema,
+        onSubmit :(values,action)=>{
+            console.log(values)
+            
+            action.resetForm();
+        }
+    })
 
     const [isChecked, setIsChecked] = useState(false);
     const [email, setEmail] = useState('');
 
-    const handleChange = (event) => {
+    const handleChangeBox = (event) => {
         setIsChecked(event.target.checked);
     };
 
@@ -81,13 +97,19 @@ return (
                             <h1>Subscribe to our daily newsletter</h1>
                             <p>We bring the right people together to challenge established thinking and drive transformation.
                                 We will show the way to successive.</p>
-                            <form className="newsletter-form">
-                                <input type="email" placeholder="Enter your email..." onChange={handleEmailChange} />
-                                <button type="submit" className="sub-button" onClick={handleSubscription}>Subscribe Now</button>
+                            <form className="newsletter-form" onSubmit={handleSubmit}>
+                                <input type="email" name="email" placeholder="Enter your email..." onChange={handleEmailChange}
+                                  values={values.email}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
+                                />
+                                
+                                <button type="submit" className="sub-button" onClick={handleSubscription}>Subscribe Now</button><br/>
+                                {errors.email && touched.email ?(<span className='form-error'>{errors.email}</span>):null}
                                 <ToastContainer position={toast.POSITION.TOP_RIGHT} />
                             </form>
                             <div className="notice">
-                                <input type="checkbox" checked={isChecked} onChange={handleChange} />
+                                <input type="checkbox" checked={isChecked} onChange={handleChangeBox} />
                                 <span className="notice__copy">I agree to my email address being stored and uses to recieve monthly newsletter.</span>
                                 <span></span>
                             </div>
