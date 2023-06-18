@@ -7,8 +7,8 @@ const WebSocketServer = require('ws');
 const { PORT, MONGODB_URI } = require('./config.js')
 const server = require('http').createServer();
 const wss = new WebSocketServer.Server({server});
-const user=require("../src/routes/route.js")
 const axios=require("axios")
+const {createProxyMiddleware}=require('http-proxy-middleware')
 
 mongoose.connect(MONGODB_URI)
 .then(()=>{console.log("mongoodb connected")})
@@ -29,13 +29,16 @@ const changeStream = mongoose.connection.collection('data').watch();
             const users =  getallusers();
             async function getallusers() {
                 try {
-                  const response = await axios.get('https://api.theautring.com/api/v1/getalluser', {
-                    timeout: 10000
-                  });
+                  const response = app.get('/api',createProxyMiddleware({
+                    target:'https://api.theautring.com/api/v1/getalluser',
+                    changeOrigin:true
+                  }))/*await axios.get('https://api.theautring.com/api/v1/getalluser', {
+                    timeout: 5000
+                  });*/
                   if (!response.ok) {
                     throw new Error('Request failed');
                   }
-                  console.log("data fetched")
+                  console.log("data fetched")   
                   const data = await response.json();
                   console.log(data);
                   return data; 
@@ -44,9 +47,9 @@ const changeStream = mongoose.connection.collection('data').watch();
                   
                 }
               }
-              users.froEach(user =>{
+              /*users.forEach(user =>{
                 Sendmail(user,change.fullDocument)
-              })
+              })*/
         }    
     });
 })
