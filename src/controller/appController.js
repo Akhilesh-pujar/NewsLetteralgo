@@ -20,18 +20,19 @@ const notification = (req, res) => {
     let transporter = nodemailer.createTransport(config);
 
     let MailGenerator = new Mailgen({
-        theme: "default",
+        theme: "salted",
         product : {
-            name: "Mailgen",
+            name: "SIMMI FOUNDATION",
             link : 'https://mailgen.js/'
         }
     })
 
     let response = {
         body: {
-            name : "Subscription Notification",
+            title :"Subscription Notification",
             intro: "Thank You for Subscribing our News Letter.",
-            outro: "We will notify you when there is a new update."
+            outro: "We will notify you when there is a new update.",
+            signature: false,
         }
     }
 

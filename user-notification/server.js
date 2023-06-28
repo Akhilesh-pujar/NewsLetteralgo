@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+const cors=require('cors');
 const nodemailer = require('nodemailer');
 const Mailgen = require('mailgen');
 const WebSocketServer = require('ws');
@@ -10,10 +11,13 @@ const wss = new WebSocketServer.Server({server});
 const axios=require("axios")
 const {createProxyMiddleware}=require('http-proxy-middleware')
 
+app.use(cors())
+
+
 mongoose.connect(MONGODB_URI)
 .then(()=>{console.log("mongoodb connected")})
 .catch((e)=>{console.log(e)})
-
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -26,30 +30,34 @@ const changeStream = mongoose.connection.collection('data').watch();
         console.log("Database Changes Occured")
         if (change.operationType === 'insert') {
             console.log('New insertion:', change.fullDocument);
-            const users =  getallusers();
+            getallusers()
             async function getallusers() {
                 try {
-                  const response = app.get('/api',createProxyMiddleware({
-                    target:'https://api.theautring.com/api/v1/getalluser',
-                    changeOrigin:true
-                  }))/*await axios.get('https://api.theautring.com/api/v1/getalluser', {
-                    timeout: 5000
-                  });*/
-                  if (!response.ok) {
-                    throw new Error('Request failed');
-                  }
-                  console.log("data fetched")   
-                  const data = await response.json();
-                  console.log(data);
-                  return data; 
+                await axios.get('http://localhost:4011/api/v1/getalluser', {
+                    timeout: 10000
+                  })
+                  
+                  .then(response =>{
+                    const users = response.data.data.users
+                    const emails = users.map(user => user.email);
+                    console.log(emails)
+                    emails.forEach(email =>{
+                    console.log('sending msg to user ',email);
+                    //Sendmail(email,change.fullDocument)
+                    })
+                  })
+                 .catch(error =>{
+                    console.log(error)
+                  })
+                  
                 } catch (error) {
                   console.error('Error:', error);
                   
                 }
               }
-              /*users.forEach(user =>{
-                Sendmail(user,change.fullDocument)
-              })*/
+            
+              
+              
         }    
     });
 })
@@ -68,18 +76,19 @@ const Sendmail = (req,res) =>{
     let transporter = nodemailer.createTransport(config);
 
     let MailGenerator = new Mailgen({
-        theme: "default",
+        theme: "salted",
         product : {
-            name: "Mailgen",
+            name: "SIMMI FOUNDATION",
             link : 'https://mailgen.js/'
         }
     })
 
     let response = {
         body: {
-            name : "New posted data",
+            title : "New posted data",
             intro: details,
-            outro: "Checkout the new updates"
+            outro: "Checkout the new updates",
+            signature: false,
         }
     }
 
